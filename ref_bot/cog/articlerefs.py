@@ -162,7 +162,7 @@ class ArticleRefs(commands.Cog):
         article = self.find_by_id(self.db_session.query(Article), id).first()
 
         if article is not None:
-            if ctx.author.id == article.discord_user_id or discord.Permissions.administrator(ctx.author.permissions_in(ctx.message.channel)):
+            if ctx.author.id == article.discord_user_id or ctx.message.author.guild_permissions.administrator:
                 self.db_session.delete(article)
                 self.db_session.commit()
                 await ctx.send('Sucessfully deleted article!')
