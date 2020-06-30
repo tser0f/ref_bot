@@ -47,6 +47,7 @@ class ArticleRefs(commands.Cog):
                 `!ref id <id>` - Gets the article with specified id
                 `!ref delete <id>` - Removes the article with specified id
                 `!ref tag <id> <+tag -tag...>` - Adds tags specified with `+` and removes tags specified with `-`
+                `!ref update <id> - Automatically update the article from the url
 
                 Examples : 
                 `!ref add https://site.com/articles/23 hashing crypto`
