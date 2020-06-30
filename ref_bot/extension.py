@@ -22,6 +22,7 @@ def setup(bot):
 
     dbsession = setup_dbsession()
     importlib.reload(ref_bot.cog.articlerefs)
+    bot.remove_command('help')
     bot.add_cog(ref_bot.cog.articlerefs.ArticleRefs(bot, dbsession))
 
     #bot.add_command(hello)
