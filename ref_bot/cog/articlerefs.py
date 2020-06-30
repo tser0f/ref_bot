@@ -24,16 +24,16 @@ class ArticleRefs(commands.Cog):
             return emb
 
     def resolve_existing_tags(self, article):
-        
         resolved_tags = []
         for tag_i in set(article.tags):
             tag_db_obj = self.db_session.query(Tag).filter(Tag.name==tag_i.name).first()
 
-            if not tag_db_obj:
-                resolved_tags.append(self.db_session.add(tag_i))
+            if tag_db_obj is None:
+                self.db_session.add(tag_i)
+                resolved_tags.append(tag_i)
             else:
                 resolved_tags.append(tag_db_obj)
-        
+
         article.tags = resolved_tags
 
     @commands.command(name="help")
