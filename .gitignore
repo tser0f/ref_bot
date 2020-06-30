@@ -142,3 +142,6 @@ cython_debug/
 
 # development settings ini
 *.dev.ini
+
+# swap files as well... lol
+*.swp
