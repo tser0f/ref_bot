@@ -10,10 +10,6 @@ bot_config = ConfigParser()
 bot_config.read('config.dev.ini')
 
 
-@commands.command()
-async def hello(ctx):
-    await ctx.send('Hello {0.display_name}.'.format(ctx.author))
-
 def setup_dbsession():
     engine = create_engine(bot_config.get('sqlalchemy', 'connection_string'))    
     
@@ -22,7 +18,7 @@ def setup_dbsession():
     return sessionm()
 
 def setup(bot):
-    print('I am being loaded!!! o.O!')
+    print('ref_bot extension loading.')
 
     dbsession = setup_dbsession()
     importlib.reload(ref_bot.cog.articlerefs)
@@ -31,5 +27,5 @@ def setup(bot):
     #bot.add_command(hello)
 
 def teardown(bot):
-    print('I am being unloaded!')
+    print('ref_bot extension unloading')
     bot.remove_cog('ArticleRefs')
