@@ -42,8 +42,8 @@ class ArticleRefs(commands.Cog):
         emb = discord.Embed(title="Ref bot help",
                 description="""Commands : 
                 `!ref add <article_url> <tags...>` - Adds a new article
-                `!ref find <id|keywords...>` - Searches for an article posted in the current channel using the specified keywords.
-                `!ref find_all <id|keywords...>` - Same as !ref find but posted anywhere
+                `!ref find <keywords...>` - Searches for an article posted in the current channel using the specified keywords.
+                `!ref find_all <keywords...>` - Same as !ref find but posted anywhere
                 `!ref id <id>` - Gets the article with specified id
                 `!ref delete <id>` - Removes the article with specified id
                 `!ref tag <id> <+tag -tag...>` - Adds tags specified with `+` and removes tags specified with `-`
@@ -98,29 +98,32 @@ class ArticleRefs(commands.Cog):
         return query.filter(Article.title.like('%{0}%'.format(title)))
     
     def find_by_keywords(self, query, keywords):
-        articles_found = query 
-        articles_narrowed_flag = False
+        articles_found = None
 
         for keyword in keywords:
-            articles_found_new = None
+            if articles_found is None or len(articles_found) == 0:
+                articles_found = query.filter(Article.tags.any(Tag.name.like('%{0}%'.format(keyword))) | Article.title.like('%{0}%'.format(keyword))).all()
+            if len(articles_found) == 1: #only one result is left, cannot get less anyway
+                return articles_found
+            elif len(articles_found) > 1:
+                articles_tag = []
+                articles_title = []
 
-            if keyword.isdigit(): #keyword is probably id
-                articles_found_new = self.find_by_id(articles_found, keyword) 
+                for article in articles_found:
+                    for tag in article.tags:
+                        if keyword in tag.name:
+                            articles_tag.append(article)
+                            break
 
-            if articles_found_new is None or articles_found_new.count() == 0:
-                articles_found_new = self.find_like_tag(articles_found, keyword) 
-            
-            if articles_found_new is None or articles_found_new.count() == 0: #nothing found by tags
-                articles_found_new = self.find_like_title(articles_found, keyword)
-            
-            if articles_found_new is not None and articles_found_new.count() != 0: #search narrowed down results, but not down to nothing
-                articles_found = articles_found_new
-                articles_narrowed_flag = True
-        
-        if articles_narrowed_flag: 
-            return articles_found
-        
-        return None
+                    if keyword in article.title:
+                        articles_title.append(article)
+
+                if len(articles_tag) >= len(articles_title): #set whichever result set is biggest
+                    articles_found = articles_tag
+                elif len(articles_tag) < len(articles_title):
+                    articles_found = articles_title
+
+        return articles_found
 
     @commands.command(name="find_all")
     async def find_article(self, ctx, *keywords):
@@ -136,15 +139,15 @@ class ArticleRefs(commands.Cog):
     @commands.command(name="find")
     async def find_article_channel(self, ctx, *keywords):
         articles_found = self.find_by_keywords(self.db_session.query(Article), keywords)
-    
-        if articles_found is not None:
-            articles_found = self.find_by_channel(articles_found, ctx.message.channel.id)
-            
-        if articles_found is not None and articles_found.count() != 0:
-            for article in articles_found:
-                await ctx.send('Found!', embed=self.generate_embed(article))
+        articles_sent = False
 
-        else:
+        if articles_found is not None and len(articles_found) != 0:
+            for article in articles_found:
+                if article.discord_channel_id == ctx.message.channel.id:
+                    articles_sent = True
+                    await ctx.send('Found!', embed=self.generate_embed(article))
+
+        if articles_sent == False:
             await ctx.send('Could not find your article. :(')
 
     @commands.command(name="id")
