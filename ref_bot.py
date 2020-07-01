@@ -2,6 +2,14 @@
 import discord
 from discord.ext import commands
 import conf
+import logging
+
+#setup logging
+logger = logging.getLogger('discord')
+logger.setLevel(conf.ini_config.get('discord', 'log_level'))
+handler = logging.FileHandler(filename=conf.ini_config.get('discord', 'log_filename'), encoding='utf-8', mode='w')
+handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
+logger.addHandler(handler)
 
 bot = commands.Bot(command_prefix=conf.ini_config.get('discord', 'command_prefix') + ' ')
 
