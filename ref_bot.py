@@ -1,12 +1,9 @@
 # ref bot.py
-from configparser import ConfigParser
 import discord
 from discord.ext import commands
+import conf
 
-# read in the bot_config
-bot_config = ConfigParser()
-bot_config.read('config.dev.ini')
-bot = commands.Bot(command_prefix=bot_config.get('discord', 'command_prefix') + ' ')
+bot = commands.Bot(command_prefix=conf.ini_config.get('discord', 'command_prefix') + ' ')
 
 @bot.event
 async def on_ready():
@@ -21,4 +18,4 @@ async def reload(ctx):
         await ctx.send('Access Denied.')
 
 bot.load_extension('ref_bot.extension')
-bot.run(bot_config.get('discord', 'token'))
+bot.run(conf.ini_config.get('discord', 'token'))
