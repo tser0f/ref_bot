@@ -30,3 +30,19 @@ python3 -m pip install -U sqlalchemy
 ref_bot extension loading.
 your_bot_name has connected to Discord!
 ```
+
+## Usage on discord
+# Commands : 
+* `!ref add <article_url> <tags...>` - Adds a new article
+* `!ref find <keywords...>` - Searches for an article posted in the current channel using the specified keywords.
+* `!ref find_all <keywords...>` - Same as !ref find but posted anywhere
+* `!ref id <id>` - Gets the article with specified id
+* `!ref delete <id>` - Removes the article with specified id
+* `!ref tag <id> <+tag -tag...>` - Adds tags specified with `+` and removes tags specified with `-`
+* `!ref update <id>` - Automatically update the article from the url
+
+# Examples : 
+* `!ref add https://site.com/articles/23 hashing crypto`
+* `!ref find hash`
+* `!ref tag 5 +passwords +practice -dolan`
+* `!ref delete 8`
