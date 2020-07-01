@@ -12,19 +12,10 @@ class Tag(Data_Base):
     name = Column(String(250))
     articles = relationship("Article", secondary='article_tags', back_populates="tags")
 
-article_tag_association = Table('article_tags', Data_Base.metadata,
-        Column('article_id', Integer, ForeignKey('articles.id')),
-        Column('tag_id', Integer, ForeignKey('tags.id'))
-        )
-#class ArticleTag(Data_Base):
-    #__tablename__ = 'article_tags'
-    #article_id = Column(Integer, ForeignKey('articles.id'))
-    #tag_id = Column(Integer, ForeignKey('tags.id'))
-    #__table_args__ = (
-    #        PrimaryKeyConstraint('article_id'),
-    #        {},
-    #    )
-
+class ArticleTag(Data_Base):
+    __tablename__ = 'article_tags'
+    article_id = Column(Integer, ForeignKey('articles.id'), primary_key=True)
+    tag_id = Column(Integer, ForeignKey('tags.id'), primary_key=True)
 
 class Article(Data_Base):
     __tablename__ = 'articles'
