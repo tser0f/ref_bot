@@ -23,19 +23,6 @@ class ArticleRefs(commands.Cog):
             emb.set_footer(text="Created: {0.created} | Last updated: {0.last_updated}".format(article))
             return emb
 
-    def resolve_existing_tags(self, article):
-        resolved_tags = []
-        for tag_i in set(article.tags):
-            tag_db_obj = self.db_session.query(Tag).filter(Tag.name==tag_i.name).first()
-
-            if tag_db_obj is None:
-                self.db_session.add(tag_i)
-                resolved_tags.append(tag_i)
-            else:
-                resolved_tags.append(tag_db_obj)
-
-        article.tags = resolved_tags
-
     @commands.command(name="help")
     async def show_help(self, ctx):
 
@@ -92,7 +79,7 @@ class ArticleRefs(commands.Cog):
             await ctx.send('WARNING: Article {0} has multiple({1}) owners in this channel!'.format(article_obj.id, len(owners)))
             return
 
-        self.resolve_existing_tags(article_obj)
+        article_obj.resolve_existing_tags(self.db_session)
         if is_new:
             self.db_session.add(article_obj)
 
@@ -219,7 +206,7 @@ class ArticleRefs(commands.Cog):
                 if existing_tag.name in tags_remove:
                     article.tags.remove(existing_tag)
 
-            self.resolve_existing_tags(article)
+            article.resolve_existing_tags(self.db_session)
             self.db_session.commit()
             await ctx.send('Tags updated!', embed=self.generate_embed(article))
 
@@ -232,7 +219,7 @@ class ArticleRefs(commands.Cog):
 
         if article is not None:
             if scrape_article(article):
-                self.resolve_existing_tags(article)
+                article.resolve_existing_tags(self.db_session)
                 self.db_session.commit()
 
                 await ctx.send('Article has been autoupdated!', embed=self.generate_embed(article))
