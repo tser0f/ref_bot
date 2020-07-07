@@ -40,7 +40,7 @@ your_bot_name has connected to Discord!
 * `!ref delete <id>` - Removes the article with specified id
 * `!ref tag <id> <+tag -tag...>` - Adds tags specified with `+` and removes tags specified with `-`
 * `!ref update <id>` - Automatically update the article from the url
-
+* `!ref owners <id>` - shows the users that added the articles to the channel
 ### Examples : 
 * `!ref add https://site.com/articles/23 hashing crypto`
 * `!ref find hash`

@@ -29,7 +29,41 @@ class Article(Data_Base):
     description = Column(String(250))
     created = Column(DateTime(timezone=True), server_default=func.now())
     last_updated = Column(DateTime(timezone=True), default=datetime.datetime.now, onupdate=datetime.datetime.now) 
-    discord_guild_id = Column(Integer)
-    discord_message_id = Column(Integer)
-    discord_user_id = Column(Integer)
-    discord_channel_id = Column(Integer)
+   
+    owners = relationship('ArticleOwner', back_populates="article")
+
+    def find_owners(self, article_owner):
+        out_owners = []
+        for owner in self.owners:
+            
+            match = True
+            if article_owner.discord_user_id:
+                match = match and (owner.discord_user_id == article_owner.discord_user_id)
+
+            if article_owner.discord_guild_id:
+                match = match and (owner.discord_guild_id == article_owner.discord_guild_id)
+                
+            if article_owner.discord_channel_id:
+                match = match and (owner.discord_channel_id == article_owner.discord_channel_id)
+
+            if match:
+                out_owners.append(owner)
+
+        return out_owners
+    #discord_guild_id = Column(Integer)
+    #discord_message_id = Column(Integer)
+    #discord_user_id = Column(Integer)
+    #discord_channel_id = Column(Integer)
+
+class ArticleOwner(Data_Base):
+    __tablename__ = 'article_owners'
+    article_id = Column(Integer, ForeignKey('articles.id'), primary_key=True)
+    discord_user_id = Column(Integer, primary_key=True)
+    discord_channel_id = Column(Integer, primary_key=True)
+    discord_message_id = Column(Integer, primary_key=True)
+    discord_guild_id = Column(Integer, primary_key=True)
+
+    article = relationship(Article, back_populates="owners")
+
+
+
