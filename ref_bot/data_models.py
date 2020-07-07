@@ -31,6 +31,20 @@ class Article(Data_Base):
     last_updated = Column(DateTime(timezone=True), default=datetime.datetime.now, onupdate=datetime.datetime.now) 
    
     owners = relationship('ArticleOwner', back_populates="article")
+    
+    def resolve_existing_tags(self, db_session):
+        resolved_tags = []
+        for tag_i in set(self.tags):
+            tag_db_obj = db_session.query(Tag).filter(Tag.name==tag_i.name).first()
+
+            if tag_db_obj is None:
+                db_session.add(tag_i)
+                resolved_tags.append(tag_i)
+            else:
+                resolved_tags.append(tag_db_obj)
+
+        self.tags = resolved_tags
+
 
     def find_owners(self, article_owner):
         out_owners = []
