@@ -13,21 +13,21 @@ class ArticleRefs(commands.Cog):
             emb = discord.Embed(title=article.title, description=article.description, url=article.url)
             #emb.set_author(name=article.discord_user_id)
 
-            emb.add_field(name="Id", value=article.id)
-            emb.add_field(name="Tags", value=', '.join([str(tag.name) for tag in article.tags]))
-            #emb.add_field(name="Added by", value="<@{0}>".format(article.discord_user_id))
-            #emb.add_field(name="Channel", value="<#{0}>".format(article.discord_channel_id))
+            emb.add_field(name='Id', value=article.id)
+            emb.add_field(name='Tags', value=', '.join([str(tag.name) for tag in article.tags]))
+            #emb.add_field(name='Added by', value='<@{0}>'.format(article.discord_user_id))
+            #emb.add_field(name='Channel', value='<#{0}>'.format(article.discord_channel_id))
             
-            #emb.add_field(name="Original request", value="[Link!](https://discordapp.com/channels/{0.discord_guild_id}/{0.discord_channel_id}/{0.discord_message_id})".format(article))
+            #emb.add_field(name='Original request', value='[Link!](https://discordapp.com/channels/{0.discord_guild_id}/{0.discord_channel_id}/{0.discord_message_id})'.format(article))
             
-            emb.set_footer(text="Created: {0.created} | Last updated: {0.last_updated}".format(article))
+            emb.set_footer(text='Created: {0.created} | Last updated: {0.last_updated}'.format(article))
             return emb
 
-    @commands.command(name="help")
+    @commands.command(name='help')
     async def show_help(self, ctx):
 
-        emb = discord.Embed(title="Ref bot help",
-                description="""Commands : 
+        emb = discord.Embed(title='Ref bot help',
+                description='''Commands : 
                 `!ref add <article_url> <tags...>` - Adds a new article
                 `!ref find <keywords...>` - Searches for an article posted in the current channel using the specified keywords.
                 `!ref find_all <keywords...>` - Same as !ref find but posted anywhere
@@ -42,10 +42,10 @@ class ArticleRefs(commands.Cog):
                 `!ref find hash`
                 `!ref tag 5 +passwords +practice -dolan`
                 `!ref delete 8`
-                """)
+                ''')
         await ctx.send(embed=emb)
 
-    @commands.command(name="add")
+    @commands.command(name='add')
     async def add_article(self, ctx, url, *tags):
         url = url.strip()
         if url[0] == '<' and url[-1] == '>':
@@ -126,7 +126,7 @@ class ArticleRefs(commands.Cog):
 
         return articles_found
 
-    @commands.command(name="find_all")
+    @commands.command(name='find_all')
     async def find_article(self, ctx, *keywords):
         articles_found = self.find_by_keywords(self.db_session.query(Article), keywords)
     
@@ -137,7 +137,7 @@ class ArticleRefs(commands.Cog):
         else:
             await ctx.send('Could not find your article. :(')
 
-    @commands.command(name="find")
+    @commands.command(name='find')
     async def find_article_channel(self, ctx, *keywords):
         articles_found = self.find_by_keywords(self.db_session.query(Article), keywords)
         articles_sent = False
@@ -151,7 +151,7 @@ class ArticleRefs(commands.Cog):
         if articles_sent == False:
             await ctx.send('Could not find your article. :(')
 
-    @commands.command(name="id")
+    @commands.command(name='id')
     async def find_article_id(self, ctx, id):
         article = self.find_by_id(self.db_session.query(Article), id).first()
 
@@ -161,7 +161,7 @@ class ArticleRefs(commands.Cog):
             await ctx.send('Could not find specified article.')
 
 
-    @commands.command(name="delete")
+    @commands.command(name='delete')
     async def delete_article(self, ctx, id):
         article_query = self.find_by_id(self.db_session.query(Article), id)
         article = article_query.first()
@@ -184,7 +184,7 @@ class ArticleRefs(commands.Cog):
         else:
             await ctx.send('Could not find the specified article.')
 
-    @commands.command(name="tag", aliases=["tags"])
+    @commands.command(name='tag', aliases=['tags'])
     async def tag_article(self, ctx, id, *tags):
         article = self.find_by_id(self.db_session.query(Article), id).first()
 
@@ -211,7 +211,7 @@ class ArticleRefs(commands.Cog):
         else:
             await ctx.send('Could not find the specified article.')
 
-    @commands.command(name="update")
+    @commands.command(name='update')
     async def update_article(self, ctx, id):
         article = self.find_by_id(self.db_session.query(Article), id).first()
 
@@ -228,7 +228,7 @@ class ArticleRefs(commands.Cog):
             await ctx.send('Could not find the specified article.')
 
 
-    @commands.command(name="owner", aliases=['owners'])
+    @commands.command(name='owner', aliases=['owners'])
     async def list_owners(self, ctx, id):
         article = self.find_by_id(self.db_session.query(Article), id).first()
 
@@ -239,6 +239,6 @@ class ArticleRefs(commands.Cog):
             owners_mentions = '\r\n'.join(['<@{0.discord_user_id}>'.format(owner) for owner in owners])
             owners_channels = '\r\n'.join(['<#{0.discord_channel_id}>'.format(owner) for owner in owners])
 
-            emb.add_field(name="Owners", value=owners_mentions)
-            emb.add_field(name="Channels", value=owners_channels)
+            emb.add_field(name='Owners', value=owners_mentions)
+            emb.add_field(name='Channels', value=owners_channels)
             await ctx.send('Article owners list : ', embed=emb)
