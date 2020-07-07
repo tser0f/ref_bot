@@ -14,7 +14,7 @@ class ArticleRefs(commands.Cog):
             #emb.set_author(name=article.discord_user_id)
 
             emb.add_field(name="Id", value=article.id)
-            emb.add_field(name="Tags", value=[str(tag.name) for tag in article.tags])
+            emb.add_field(name="Tags", value=', '.join([str(tag.name) for tag in article.tags]))
             #emb.add_field(name="Added by", value="<@{0}>".format(article.discord_user_id))
             #emb.add_field(name="Channel", value="<#{0}>".format(article.discord_channel_id))
             
@@ -65,8 +65,6 @@ class ArticleRefs(commands.Cog):
             if scrape_article(article_obj) == False:
                 await ctx.send('Error! Could not add the article')
                 return
-                #discord_user_id=ctx.author.id, discord_channel_id=ctx.message.channel.id, discord_message_id=ctx.message.id,
-                #discord_guild_id=ctx.guild.id)
         else:
             owners = article_obj.find_owners(ArticleOwner(discord_channel_id=ctx.message.channel.id, discord_guild_id=ctx.guild.id))
         
@@ -237,8 +235,9 @@ class ArticleRefs(commands.Cog):
         if article is not None:
             emb = discord.Embed(title=article.title)
 
-            owners_mentions = '\r\n'.join(['<@{0.discord_user_id}>'.format(owner) for owner in article.owners])
-            owners_channels = '\r\n'.join(['<#{0.discord_channel_id}>'.format(owner) for owner in article.owners])
+            owners = article.owners_without_personal()
+            owners_mentions = '\r\n'.join(['<@{0.discord_user_id}>'.format(owner) for owner in owners])
+            owners_channels = '\r\n'.join(['<#{0.discord_channel_id}>'.format(owner) for owner in owners])
 
             emb.add_field(name="Owners", value=owners_mentions)
             emb.add_field(name="Channels", value=owners_channels)
